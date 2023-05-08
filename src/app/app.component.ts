@@ -4,6 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ControlsComponent } from './components/controls/controls.component';
 import { Subscription } from 'rxjs';
 import { AppService } from './services/app.service';
+import antenas from '../../antenasMoviles250323, 20-33-39.json';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent implements AfterViewInit {
     this.geoService.updateView();
     this.geoService.setTileSource();
     this.geoService.updateSize();
+    // this.geoService.addMarker();
   }
 
   openControls(): void {
