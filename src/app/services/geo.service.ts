@@ -28,6 +28,7 @@ import {
   Stroke,
   Text,
 } from 'ol/style.js';
+import antenas from '../../../antenasMoviles250323, 20-33-39.json';
 
 @Injectable()
 export class GeoService {
@@ -40,7 +41,7 @@ export class GeoService {
 
   selectedTileSource = this.tileSources[1];
   vectorSources: Vector[] = [];
-  // markers = [];
+  markers:any = [];
 
   private readonly map: Map;
   private readonly tileLayer: TileLayer<OsmSource>;
@@ -52,19 +53,7 @@ export class GeoService {
     this.tileLayer = new TileLayer();
     this.vectorLayer = new VectorLayer<any>();
 
-    const count = 1;
-    const features = new Array(count);
-    // const e = 4500000;
-    //var iconGeometry=new Point(transform([40.41,-3.70], 'EPSG:4326','EPSG:3857'));
-//   var iconFeature = new Feature({
-//       geometry:iconGeometry
-//   });
-    for (let i = 0; i < count; ++i) {
-      const coordinates=new Point(transform([-3.70, 40.41], 'EPSG:4326','EPSG:3857'));
-      features[i] = new Feature({
-              geometry:coordinates
-          });
-    }
+    var features = this.addMarker(antenas);
     const source = new VectorSource({
       features: features,
     });
@@ -126,19 +115,30 @@ export class GeoService {
 
     const dragAndDropInteraction = new DragAndDrop({ formatConstructors: [GeoJSON] });
 
-    // dragAndDropInteraction.on('addfeatures', (event) => {
+    dragAndDropInteraction.on('addfeatures', (event) => {
 
-    //   const features = (event.features ?? []) as Feature<Geometry>[] | Collection<Feature<Geometry>> | undefined;
-    //   const vectorSource = new VectorSource({ features });
-    //   const vector: Vector = { name: event.file.name, source: vectorSource };
+      const features = (event.features ?? []) as Feature<Geometry>[] | Collection<Feature<Geometry>> | undefined;
+      const vectorSource = new VectorSource({ features });
+      const vector: Vector = { name: event.file.name, source: vectorSource };
 
-    //   this.vectorSources.push(vector);
-    //   this.setVectorSource(vector);
-    // });
+      this.vectorSources.push(vector);
+      this.setVectorSource(vector);
+    });
 
     this.map.addInteraction(dragAndDropInteraction);
   }
 
+  //MÉTODOS
+  addMarker(antenas:any) {
+    const features = new Array(antenas.length);
+    for (let i=0; i<antenas.length; i++){
+      const coordinates=new Point(transform([Number(antenas[i].Gis_Longitud), Number(antenas[i].Gis_Latitud)], 'EPSG:4326','EPSG:3857'));
+      features[i] = new Feature({
+                  geometry:coordinates
+              });
+    }
+    return features;   
+  }
   /**
    * Updates zoom and center of the view.
    * @param zoom Zoom.
@@ -176,65 +176,4 @@ export class GeoService {
     this.map.getView().fit(this.vectorLayer.getSource().getExtent());
   }
 
-//   addMarker(antenas:any) {
-//     antenas.forEach((f) => { 
-//       this.markers.push({
-//         position: {lat: Number(f.Gis_Latitud), lng: Number(f.Gis_Longitud)},
-//         title: f.Gis_Codigo,
-//         // label: {
-//         //   color: 'black',
-//         //   text: f.Gis_Codigo.charAt(0).toUpperCase(),
-//         // },
-//         optimized: true,
-//         options: { animation: google.maps.Animation.DROP, icon: this.movistar},
-//         clickable: true,
-//       })    
-//   });
-// }
-
-// addMarker() {
-//   var iconFeatures=[];
-
-//   var iconGeometry=new Point(transform([40.41,-3.70], 'EPSG:4326','EPSG:3857'));
-//   var iconFeature = new Feature({
-//       geometry:iconGeometry
-//   });
-  
-//   iconFeatures.push(iconFeature);
-  
-//   var vectorSource = new VectorSource({
-//     features: iconFeatures //add an array of features
-// });
-// var iconStyle = new Style({
-//   image: new Icon(/** @type {olx.style.IconOptions} */ ({
-//       anchor: [0.5, 46],
-//       anchorXUnits: 'fraction',
-//       anchorYUnits: 'pixels',
-//       opacity: 0.95
-//   }))
-// });
-
-// var vectorLayer = new VectorLayer({
-//   source: vectorSource,
-//   style: iconStyle
-// });
-
-// this.map.addLayer(vectorLayer);
-// return iconFeature;
-// }
-// addMarker() {
-// var markers = new VectorLayer({
-//   source: new VectorSource(),
-//   style: new Style({
-//     image: new Icon({
-//       anchor: [0.5, 1],
-//       src: 'marker.png'
-//     })
-//   })
-// });
-// this.map.addLayer(markers);
-
-// var marker = new Feature(new Point(fromLonLat([40.47, -3.41])));
-// markers.getSource()?.addFeature(marker)
-//   }
 }
