@@ -30,6 +30,7 @@ import {
 } from 'ol/style.js';
 import antenas from '../../../antenasMoviles250323, 20-33-39.json';
 
+
 @Injectable()
 export class GeoService {
 
